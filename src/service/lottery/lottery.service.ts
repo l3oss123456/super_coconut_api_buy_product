@@ -1,15 +1,18 @@
+import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 import { LotteryModel } from '@/model/mongodb/lottery/lottery.model';
 import cronjob from '@/utils/cronjob';
 import mongo_domain from '@/utils/mongodb_domain';
 import responseHandler from '@/utils/responseHandler';
-import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
+// import { SocketGateway } from '@/connection/socket/socket.gateway';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
+  //   constructor(private socketGateway: SocketGateway) {}
+
   async tellFrontendStartRandom() {
-    // console.log(
-    //   'tellFrontendStartRandomtellFrontendStartRandomtellFrontendStartRandom',
-    // );
+    // await this.socketGateway.broadcast('startRandom', {
+    //   start_ramdom: true,
+    // });
   }
 
   onModuleInit() {

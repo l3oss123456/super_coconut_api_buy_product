@@ -1,0 +1,18 @@
+version: '3.8'
+services:
+  api:
+    image: api_admin_v3_image
+    build: .
+    # ports container: host port  //host port ต้องเหมือนกับ project นั้นๆ
+    ports:
+      - '8080:8080'
+    volumes:
+      - .:/usr/src/api_admin_v3
+    restart: always
+    deploy: # คำสั่งสำหรับ docker-swarm
+      replicas: 3
+      update_config:
+        parallelism: 1
+        delay: 60s
+      restart_policy:
+        condition: on-failure

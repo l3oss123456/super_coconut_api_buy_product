@@ -11,17 +11,17 @@ import { Server, Socket } from 'socket.io';
 import { ForbiddenException } from '@nestjs/common';
 
 @WebSocketGateway({
-  cors: {
-    origin: '*',
-  },
   // cors: {
-  //   origin: [
-  //     'https://adminv3.wemove.co.th',
-  //     'http://wemove-sit.th1.proen.cloud',
-  //     'http://localhost:3000',
-  //     'http://localhost:3010',
-  //   ],
+  //   origin: '*',
   // },
+  cors: {
+    origin: [
+      'https://adminv3.wemove.co.th',
+      'http://wemove-sit.th1.proen.cloud',
+      'http://localhost:3000',
+      'http://localhost:3010',
+    ],
+  },
 })
 export class SocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
@@ -62,5 +62,9 @@ export class SocketGateway
 
   sendMessage(channel: string, client_id: string, message: any) {
     this.server.to(client_id).emit(channel, message);
+  }
+
+  broadcast(chanel: string, data: any): void {
+    this.server.emit(chanel, data);
   }
 }
