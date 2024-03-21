@@ -1,9 +1,9 @@
-import { Module, DynamicModule } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongodbModule } from '@/connection/database/mongodb/mongodb.module';
 import { AdminModule } from '../admin/admin.module';
 import { LotteryModule } from '../lottery/lottery.module';
-// import { SocketGateway } from '@/connection/socket/socker.gateway';
+import { SocketGateway } from '@/connection/socket/socker.gateway';
 
 @Module({
   imports: [
@@ -15,6 +15,6 @@ import { LotteryModule } from '../lottery/lottery.module';
     LotteryModule,
   ],
   controllers: [],
-  providers: [],
+  providers: [SocketGateway],
 })
 export class AppModule {}

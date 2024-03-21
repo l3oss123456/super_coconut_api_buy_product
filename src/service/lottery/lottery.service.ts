@@ -7,9 +7,9 @@ import { BadRequestException, Injectable, OnModuleInit } from '@nestjs/common';
 @Injectable()
 export class SchedulerService implements OnModuleInit {
   async tellFrontendStartRandom() {
-    console.log(
-      'tellFrontendStartRandomtellFrontendStartRandomtellFrontendStartRandom',
-    );
+    // console.log(
+    //   'tellFrontendStartRandomtellFrontendStartRandomtellFrontendStartRandom',
+    // );
   }
 
   onModuleInit() {

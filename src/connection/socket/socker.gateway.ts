@@ -12,13 +12,16 @@ import { ForbiddenException } from '@nestjs/common';
 
 @WebSocketGateway({
   cors: {
-    origin: [
-      'https://adminv3.wemove.co.th',
-      'http://wemove-sit.th1.proen.cloud',
-      'http://localhost:3000',
-      'http://localhost:3010',
-    ],
+    origin: '*',
   },
+  // cors: {
+  //   origin: [
+  //     'https://adminv3.wemove.co.th',
+  //     'http://wemove-sit.th1.proen.cloud',
+  //     'http://localhost:3000',
+  //     'http://localhost:3010',
+  //   ],
+  // },
 })
 export class SocketGateway
   implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
