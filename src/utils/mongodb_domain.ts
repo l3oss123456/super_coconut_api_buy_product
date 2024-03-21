@@ -1,25 +1,41 @@
+import { HttpStatus } from '@nestjs/common';
+import * as R from 'ramda';
+
 export const MongodbAggregate = async ({
   model = null,
   pipeline = [],
-}: // page = 1,
-// per_page = 10,
-{
+  page = 1,
+  per_page = 10,
+  project = null,
+}: {
   model: any;
   pipeline: any[];
-  // page?: number;
-  // per_page?: number;
+  page?: number;
+  per_page?: number;
+  project?: object;
 }) => {
   try {
-    const obj = await model.aggregate(pipeline).exec();
+    let _pipeline = [...pipeline];
+
+    if (!R.isNil(page) && !R.isNil(per_page)) {
+      _pipeline = [
+        ..._pipeline,
+        { $skip: (Number(page) - 1) * Number(per_page) },
+        { $limit: Number(per_page) },
+      ];
+    }
+
+    if (!R.isNil(project)) {
+      _pipeline = [..._pipeline, { $project: project }];
+    }
+
+    const obj = await model.aggregate(_pipeline).exec();
     return {
       description: 'success',
       data: obj,
     };
   } catch (error) {
-    return {
-      description: `error query MongoAggregate`,
-      error: error,
-    };
+    throw { code: HttpStatus.BAD_REQUEST, description: error };
   }
 };
 
@@ -49,10 +65,7 @@ export const MongodbFind = async ({
       data: obj,
     };
   } catch (error) {
-    return {
-      description: `error query MongodbFind`,
-      error: error,
-    };
+    throw { code: HttpStatus.BAD_REQUEST, description: error };
   }
 };
 
@@ -72,10 +85,7 @@ export const MongodbCreate = async ({
       data: obj,
     };
   } catch (error) {
-    return {
-      description: `error query MongodbCreate`,
-      error: error,
-    };
+    throw { code: HttpStatus.BAD_REQUEST, description: error };
   }
 };
 
