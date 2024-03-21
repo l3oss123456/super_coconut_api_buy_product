@@ -6,6 +6,7 @@ export interface MongodbDomainParameterInterface {
   per_page?: number;
   sort_field?: string[];
   sort_order?: number[];
+  project?: object;
 }
 
 export interface MongodbDomainResponseInterface {

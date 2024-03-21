@@ -31,8 +31,12 @@ export const MongodbAggregate = async ({
         (stage) => stage.$match,
       );
       const existingMatchStage = _pipeline[existingMatchStageIndex].$match;
+
       _pipeline[existingMatchStageIndex].$match = {
-        $and: [existingMatchStage, { deleted_at: { $eq: null } }],
+        $and: [
+          existingMatchStage,
+          { $or: [{ deleted_at: null }, { deleted_at: { $exists: false } }] },
+        ],
       };
     } else {
       _pipeline = [..._pipeline, { $match: { deleted_at: { $eq: null } } }];
@@ -77,6 +81,9 @@ export const MongodbFind = async ({
   filter = {},
   page = 1,
   per_page = 10,
+  sort_field = null,
+  sort_order = null,
+  project = null,
 }: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
   try {
     const skip = (page - 1) * per_page;
@@ -85,6 +92,13 @@ export const MongodbFind = async ({
         ...filter,
         $or: [{ deleted_at: null }, { deleted_at: { $exists: false } }],
       })
+      .sort(
+        helper.ToConvertMongooseSortOrder({
+          sort_field: sort_field,
+          sort_order: sort_order,
+        }),
+      )
+      .select(project)
       .skip(skip)
       .limit(per_page);
 
