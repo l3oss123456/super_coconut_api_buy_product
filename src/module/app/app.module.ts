@@ -2,9 +2,8 @@ import { Module, DynamicModule } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { MongodbModule } from '@/connection/database/mongodb/mongodb.module';
 import { AdminModule } from '../admin/admin.module';
+import { LotteryModule } from '../lottery/lottery.module';
 // import { SocketGateway } from '@/connection/socket/socker.gateway';
-import * as fs from 'fs';
-import * as path from 'path';
 
 @Module({
   imports: [
@@ -13,6 +12,7 @@ import * as path from 'path';
     }),
     MongodbModule,
     AdminModule,
+    LotteryModule,
   ],
   controllers: [],
   providers: [],

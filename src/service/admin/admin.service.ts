@@ -1,9 +1,5 @@
 import { AdminDTO } from '@/dto/admin/admin.dto';
-import {
-  MongodbAggregate,
-  MongodbCreate,
-  MongodbFind,
-} from '@/utils/mongodb_domain';
+import mongo_domain from '@/utils/mongodb_domain';
 import * as R from 'ramda';
 import { BadRequestException, Injectable } from '@nestjs/common';
 import { AdminModel } from '@/model/mongodb/admin/admin.model';
@@ -11,13 +7,23 @@ import responseHandler from '@/utils/responseHandler';
 
 @Injectable()
 export class AdminService {
-  async getAllAdmin({ sort_field, sort_order, page = null, per_page = null }) {
+  async getAllAdmin({
+    sort_field,
+    sort_order,
+    page = null,
+    per_page = null,
+  }: {
+    sort_field?: string[];
+    sort_order?: number[];
+    page?: number;
+    per_page?: number;
+  }) {
     try {
-      const obj = await MongodbAggregate({
+      const obj = await mongo_domain.MongodbAggregate({
         model: AdminModel,
         pipeline: [
           //   { $match: { age: { $gte: 18 }, first_name: 'admin01' } },
-          { $sort: { first_name: 1, updated_at: -1 } },
+          { $sort: { updated_at: -1 } },
         ],
         sort_field: sort_field,
         sort_order: sort_order,
@@ -39,7 +45,7 @@ export class AdminService {
 
   async createAdmin({ body = null }: { body: AdminDTO }) {
     try {
-      const find_admin = await MongodbFind({
+      const find_admin = await mongo_domain.MongodbFind({
         model: AdminModel,
         filter: {
           first_name: body.first_name,
@@ -55,7 +61,7 @@ export class AdminService {
         };
       }
 
-      await MongodbCreate({
+      await mongo_domain.MongodbCreate({
         model: AdminModel,
         data: body,
       });

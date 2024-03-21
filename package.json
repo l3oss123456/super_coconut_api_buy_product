@@ -28,6 +28,7 @@
     "@nestjs/swagger": "^7.3.0",
     "@nestjs/websockets": "^9.4.3",
     "mongoose": "^8.2.2",
+    "node-cron": "^3.0.3",
     "ramda": "^0.29.1",
     "reflect-metadata": "^0.1.13",
     "rxjs": "^7.2.0",
