@@ -5,7 +5,7 @@ import {
   MongodbFind,
 } from '@/utils/mongodb_domain';
 import * as R from 'ramda';
-import { BadRequestException, HttpStatus, Injectable } from '@nestjs/common';
+import { BadRequestException, Injectable } from '@nestjs/common';
 import { AdminModel } from '@/model/mongodb/admin/admin.model';
 import responseHandler from '@/utils/responseHandler';
 
@@ -16,9 +16,11 @@ export class AdminService {
       const obj = await MongodbAggregate({
         model: AdminModel,
         pipeline: [
-          //   { $match: { age: { $gte: 18 } } }, // Match documents where age is greater than or equal to 18
-          { $sort: { updated_at: -1 } },
+          //   { $match: { age: { $gte: 18 }, first_name: 'admin01' } },
+          { $sort: { first_name: 1, updated_at: -1 } },
         ],
+        sort_field: sort_field,
+        sort_order: sort_order,
         page: page,
         per_page: per_page,
       });

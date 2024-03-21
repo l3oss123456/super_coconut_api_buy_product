@@ -1,5 +1,10 @@
+import {
+  MongodbDomainParameterInterface,
+  MongodbDomainResponseInterface,
+} from '@/interface/domain/mongodb_domain.interface';
 import { HttpStatus } from '@nestjs/common';
 import * as R from 'ramda';
+import helper from './helper';
 
 export const MongodbAggregate = async ({
   model = null,
@@ -7,15 +12,31 @@ export const MongodbAggregate = async ({
   page = 1,
   per_page = 10,
   project = null,
+  sort_field = null,
+  sort_order = null,
 }: {
   model: any;
   pipeline: any[];
   page?: number;
   per_page?: number;
   project?: object;
-}) => {
+  sort_field?: string[];
+  sort_order?: number[];
+}): Promise<MongodbDomainResponseInterface> => {
   try {
     let _pipeline = [...pipeline];
+
+    if (_pipeline.some((stage) => stage.$match)) {
+      const existingMatchStageIndex = _pipeline.findIndex(
+        (stage) => stage.$match,
+      );
+      const existingMatchStage = _pipeline[existingMatchStageIndex].$match;
+      _pipeline[existingMatchStageIndex].$match = {
+        $and: [existingMatchStage, { deleted_at: { $eq: null } }],
+      };
+    } else {
+      _pipeline = [..._pipeline, { $match: { deleted_at: { $eq: null } } }];
+    }
 
     if (!R.isNil(page) && !R.isNil(per_page)) {
       _pipeline = [
@@ -27,6 +48,18 @@ export const MongodbAggregate = async ({
 
     if (!R.isNil(project)) {
       _pipeline = [..._pipeline, { $project: project }];
+    }
+
+    if (!R.isNil(sort_field) && !R.isNil(sort_order)) {
+      _pipeline = [
+        ..._pipeline,
+        {
+          $sort: helper.ToConvertMongooseSortOrder({
+            sort_field,
+            sort_order,
+          }),
+        },
+      ];
     }
 
     const obj = await model.aggregate(_pipeline).exec();
@@ -44,12 +77,7 @@ export const MongodbFind = async ({
   filter = {},
   page = 1,
   per_page = 10,
-}: {
-  model: any;
-  filter?: any;
-  page?: number;
-  per_page?: number;
-}) => {
+}: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
   try {
     const skip = (page - 1) * per_page;
     const obj = await model
@@ -72,10 +100,7 @@ export const MongodbFind = async ({
 export const MongodbCreate = async ({
   model = null,
   data = {},
-}: {
-  model: any;
-  data: object;
-}) => {
+}: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
   try {
     const obj = new model({ ...data });
     await obj.save();
