@@ -15,6 +15,6 @@ import { SocketGateway } from '@/connection/socket/socket.gateway';
     LotteryModule,
   ],
   // controllers: [],
-  // providers: [SocketGateway],
+  providers: [SocketGateway],
 })
 export class AppModule {}

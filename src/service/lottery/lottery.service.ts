@@ -3,27 +3,27 @@ import { LotteryModel } from '@/model/mongodb/lottery/lottery.model';
 import cronjob from '@/utils/cronjob';
 import mongo_domain from '@/utils/mongodb_domain';
 import responseHandler from '@/utils/responseHandler';
-// import { SocketGateway } from '@/connection/socket/socket.gateway';
+import { SocketGateway } from '@/connection/socket/socket.gateway';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
-  //   constructor(private socketGateway: SocketGateway) {}
+  constructor(private socketGateway: SocketGateway) {}
 
   async tellFrontendStartRandom() {
-    // await this.socketGateway.broadcast('startRandom', {
-    //   start_ramdom: true,
-    // });
+    await this.socketGateway.broadcast('startRandom', {
+      start_random: true,
+    });
   }
 
   onModuleInit() {
-    // cron.schedule(process.env.CRON_SCHEDULE, () => {
-    //   // cron.schedule('*/5 * * * * *', () => {
-    //   this.inActiveFuelRate();
-    //   // this.activeFuelRate();
-    // });
-
     cronjob({
-      schedule_time: '*/3 * * * * *',
+      // schedule_time: '*/30 * * * * *',
+      schedule_time:
+        process.env.SERVER_TYPE === 'laos'
+          ? '30 20 * * 1,4'
+          : process.env.SERVER_TYPE === 'hanoi'
+          ? '30 18 * * *'
+          : '*/30 * * * * *',
       //   schedule_time: '1 * * * * *',
       task_action: () => {
         this.tellFrontendStartRandom();

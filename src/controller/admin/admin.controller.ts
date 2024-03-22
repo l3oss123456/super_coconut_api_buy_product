@@ -1,7 +1,7 @@
 import { AdminDTO } from '@/dto/admin/admin.dto';
 import { PaginationDTO, SortDTO } from '@/dto/global.dto';
 import { AdminService } from '@/service/admin/admin.service';
-import { Body, Controller, Get, Inject, Post, Query } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 @ApiTags('Admin')
