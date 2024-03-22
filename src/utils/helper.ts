@@ -1,4 +1,5 @@
 import * as R from 'ramda';
+import { deepParseJson } from 'deep-parse-json';
 
 export default {
   ToConvertMongooseSortOrder: ({
@@ -49,5 +50,86 @@ export default {
         }
       }
     }
+  },
+  ToConvertDataTypeFormData: (dto: any, form_data: object) => {
+    const _dto = new dto();
+    form_data = deepParseJson(form_data);
+    Object.keys(form_data).forEach((key) => {
+      const data_type = Reflect.getMetadata('design:type', dto.prototype, key);
+
+      if (R.isEmpty(form_data[key])) {
+        form_data = R.omit([`${key}`], form_data);
+      } else {
+        if (R.isNil(form_data[key])) {
+          _dto[key] = null;
+        } else if (data_type === Number) {
+          _dto[key] = Number(form_data[key]);
+        } else if (data_type === Array) {
+          if (typeof form_data[key] === 'string') {
+            const str = JSON.stringify(form_data[key]);
+            const obj = JSON.parse(str);
+            const regex = /{[^}]+}/g;
+            const array = obj.match(regex);
+            const object = [];
+            if (!R.isNil(array)) {
+              for (let i = 0; i < array.length; i++) {
+                const permObj = JSON.parse(array[i]);
+                object.push(permObj);
+              }
+              _dto[key] = object;
+            } else {
+              _dto[key] = obj.split(',');
+            }
+          } else {
+            _dto[key] = form_data[key];
+          }
+        } else {
+          if (data_type === Number) {
+            _dto[key] = Number(form_data[key]);
+          } else {
+            _dto[key] = form_data[key];
+          }
+        }
+      }
+
+      // if (R.isNil(form_data[key]) || R.isEmpty(form_data[key])) {
+      //   form_data = R.omit([`${key}`], form_data);
+      // } else {
+      //   if (form_data[key] === `-`) {
+      //     form_data[key] = '';
+      //   }
+
+      //   if (data_type === Number) {
+      //     _dto[key] = Number(form_data[key]);
+      //   } else if (data_type === Array) {
+      //     if (typeof form_data[key] === 'string') {
+      //       const str = JSON.stringify(form_data[key]);
+      //       const obj = JSON.parse(str);
+      //       const regex = /{[^}]+}/g;
+      //       const array = obj.match(regex);
+      //       const object = [];
+      //       if (!R.isNil(array)) {
+      //         for (let i = 0; i < array.length; i++) {
+      //           const permObj = JSON.parse(array[i]);
+      //           object.push(permObj);
+      //         }
+      //         _dto[key] = object;
+      //       } else {
+      //         _dto[key] = obj.split(',');
+      //       }
+      //     } else {
+      //       _dto[key] = form_data[key];
+      //     }
+      //   } else {
+      //     if (data_type === Number) {
+      //       _dto[key] = Number(form_data[key]);
+      //     } else {
+      //       _dto[key] = form_data[key];
+      //     }
+      //   }
+      // }
+    });
+
+    return _dto;
   },
 };

@@ -1,4 +1,5 @@
 import { Module } from '@nestjs/common';
+import { APP_INTERCEPTOR } from '@nestjs/core';
 import { ConfigModule } from '@nestjs/config';
 import { MongodbModule } from '@/connection/database/mongodb/mongodb.module';
 import { AdminModule } from '../admin/admin.module';

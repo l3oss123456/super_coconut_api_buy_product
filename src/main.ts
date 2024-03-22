@@ -2,13 +2,14 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from '@/module/app/app.module';
 import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 import { GeneralErrorFilter } from './middleware/generalError.middileware';
+import { ValidationPipe } from './utils/validation.pipe';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   app.setGlobalPrefix(`api`);
   app.enableCors();
   app.useGlobalFilters(new GeneralErrorFilter());
-  // app.useGlobalPipes(new ValidationPipe());
+  app.useGlobalPipes(new ValidationPipe());
   // app.useGlobalFilters(new SequelizeUniqueConstraintErrorFilter());
   // app.use(requestIp.mw());
 

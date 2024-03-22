@@ -6,13 +6,17 @@ const LotterySchema = new mongoose.Schema(
       type: Number,
       validate: {
         validator: function (v: any) {
-          // Check if the number has exactly 6 digits
-          return /^\d{6}$/.test(v.toString());
+          return /^\d{5}$/.test(v.toString());
         },
         message: (props: any) =>
-          `${props.value} is not a valid 6-digit number!`,
+          `${props.value} is not a valid 5-digit number!`,
       },
-      required: true, // Assuming the number field is required
+      required: true,
+    },
+    lottery_type: {
+      type: String,
+      enum: ['eng', 'laos', 'hanoi'],
+      required: true,
     },
   },
   {

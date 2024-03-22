@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { MiddlewareConsumer, Module } from '@nestjs/common';
 import { LotteryController } from '@/controller/lottery/lottery.controller';
 import {
   LotteryService,

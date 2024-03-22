@@ -112,6 +112,28 @@ export default {
     }
   },
 
+  MongodbFindOne: async ({
+    model = null,
+    filter = {},
+    project = null,
+  }: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
+    try {
+      const obj = await model
+        .findOne({
+          ...filter,
+          $or: [{ deleted_at: null }, { deleted_at: { $exists: false } }],
+        })
+        .select(project);
+
+      return {
+        description: `success`,
+        data: obj,
+      };
+    } catch (error) {
+      throw { code: HttpStatus.BAD_REQUEST, description: error };
+    }
+  },
+
   MongodbCreate: async ({
     model = null,
     data = {},
@@ -119,6 +141,55 @@ export default {
     try {
       const obj = new model({ ...data });
       await obj.save();
+
+      return {
+        description: `success`,
+        data: obj,
+      };
+    } catch (error) {
+      throw { code: HttpStatus.BAD_REQUEST, description: error };
+    }
+  },
+
+  MongodbUpdate: async ({
+    model = null,
+    data = {},
+    filter = {},
+  }: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
+    try {
+      const obj = await model.updateOne({ ...filter }, { ...data });
+      if (!obj) {
+        throw 'ไม่พบข้อมูทลนี้ในระบบ';
+      }
+
+      return {
+        description: `success`,
+        data: obj,
+      };
+    } catch (error) {
+      throw { code: HttpStatus.BAD_REQUEST, description: error };
+    }
+  },
+
+  MongodbUpdateById: async ({
+    _id = null,
+    model = null,
+    data = {},
+  }: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
+    try {
+      if (R.isNil(_id)) {
+        throw 'ไม่สามารถ update ข้อมูลได้เนื่องจากไม่มีข้อมูล _id';
+      }
+
+      const obj = await model.findByIdAndUpdate(
+        _id,
+        { $set: data },
+        { new: true }, // Return the updated document
+      );
+
+      if (!obj) {
+        throw 'ไม่พบข้อมูทลนี้ในระบบ';
+      }
 
       return {
         description: `success`,

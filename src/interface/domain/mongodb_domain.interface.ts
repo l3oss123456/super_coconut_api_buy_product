@@ -1,4 +1,5 @@
 export interface MongodbDomainParameterInterface {
+  _id?: any;
   model: any;
   filter?: object;
   data?: object | any[];
