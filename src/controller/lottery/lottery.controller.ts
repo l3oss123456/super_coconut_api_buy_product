@@ -1,4 +1,4 @@
-import { PaginationDTO, SortDTO } from '@/dto/global.dto';
+import { DateDurationDTO, PaginationDTO, SortDTO } from '@/dto/global.dto';
 import { LotteryDTO, LotteryParamsDTO } from '@/dto/lottery/lottery.dto';
 import { LotteryService } from '@/service/lottery/lottery.service';
 import helper from '@/utils/helper';
@@ -22,6 +22,7 @@ export class LotteryController {
   @Get(`/`)
   getAllLottery(
     @Query() filter_info: LotteryParamsDTO,
+    // @Query() date_duration: DateDurationDTO,
     @Query() { sort_field, sort_order }: SortDTO,
     @Query() { page, per_page }: PaginationDTO,
   ) {
@@ -29,8 +30,23 @@ export class LotteryController {
       filter_info,
       sort_field,
       sort_order,
+      // date_duration,
       page,
       per_page,
+    });
+  }
+
+  @Get(`/get-last-seven-day-lottery`)
+  getLastSevenDayLottery(@Query() filter_info: LotteryParamsDTO) {
+    return this.service.getLastSevenDayLottery({
+      filter_info,
+    });
+  }
+
+  @Get(`/get-today-lottery`)
+  getTodayLottery(@Query() filter_info: LotteryParamsDTO) {
+    return this.service.getTodayLottery({
+      filter_info,
     });
   }
 

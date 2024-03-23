@@ -26,7 +26,7 @@ export class SchedulerService implements OnModuleInit {
           : process.env.SERVER_TYPE === 'hanoi'
           ? '30 18 * * *'
           : '*/30 * * * * *',
-      //   schedule_time: '1 * * * * *',
+      // schedule_time: '1 * * * * *',
       task_action: () => {
         this.tellFrontendStartRandom();
       },
@@ -40,22 +40,48 @@ export class LotteryService {
     filter_info,
     sort_field,
     sort_order,
+    // date_duration,
     page = null,
     per_page = null,
   }: {
     filter_info?: any;
     sort_field?: string[];
     sort_order?: number[];
+    // date_duration?: any;
     page?: number;
     per_page?: number;
   }) {
     try {
+      let match_statement = {};
+
+      if (
+        !R.isNil(filter_info.lottery_type) &&
+        !R.isEmpty(filter_info.lottery_type)
+      ) {
+        match_statement = {
+          ...match_statement,
+          lottery_type: filter_info.lottery_type,
+        };
+      }
+
+      // if (
+      //   !R.isNil(date_duration.start_date) &&
+      //   !R.isEmpty(date_duration.start_date) &&
+      //   !R.isNil(date_duration.end_date) &&
+      //   !R.isEmpty(date_duration.end_date)
+      // ) {
+      //   match_statement['created_at'] = {
+      //     $gte: new Date(date_duration.start_date),
+      //     $lte: new Date(date_duration.end_date),
+      //   };
+      // }
+
       const obj = await mongo_domain.MongodbAggregate({
         model: LotteryModel,
         pipeline: [
           {
             $match: {
-              lottery_type: filter_info.lottery_type,
+              ...match_statement,
             },
           },
           { $sort: { updated_at: -1 } },
@@ -78,7 +104,59 @@ export class LotteryService {
     }
   }
 
-  async createLottery({ body = null }: { body: LotteryDTO }) {
+  async getLastSevenDayLottery({ filter_info }: { filter_info?: any }) {
+    try {
+      let match_statement = {};
+
+      if (
+        !R.isNil(filter_info.lottery_type) &&
+        !R.isEmpty(filter_info.lottery_type)
+      ) {
+        match_statement = {
+          ...match_statement,
+          lottery_type: filter_info.lottery_type,
+        };
+      }
+
+      // Calculate the date 7 days ago from today
+      const startDate = new Date();
+      startDate.setDate(startDate.getDate() - 8);
+
+      // Calculate the date yesterday
+      const endDate = new Date();
+      endDate.setDate(endDate.getDate() - 1);
+
+      // Add the date filter to the match criteria
+      match_statement['created_at'] = {
+        $gte: startDate,
+        $lt: endDate,
+      };
+
+      const obj = await mongo_domain.MongodbAggregate({
+        model: LotteryModel,
+        pipeline: [
+          {
+            $match: {
+              ...match_statement,
+            },
+          },
+          { $sort: { created_at: -1 } },
+        ],
+      });
+
+      return responseHandler.Success({
+        results: {
+          data: obj.data,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException({
+        message: error,
+      });
+    }
+  }
+
+  async getTodayLottery({ filter_info }: { filter_info?: any }) {
     try {
       const todayMidnight = new Date();
       todayMidnight.setUTCHours(0, 0, 0, 0);
@@ -86,11 +164,36 @@ export class LotteryService {
       const endOfDay = new Date();
       endOfDay.setUTCHours(23, 59, 59, 999);
 
-      // const todayMidnight = new Date('2024-03-03');
-      // todayMidnight.setUTCHours(0, 0, 0, 0);
+      const obj = await mongo_domain.MongodbFindOne({
+        model: LotteryModel,
+        filter: {
+          created_at: {
+            $gte: todayMidnight,
+            $lt: endOfDay,
+          },
+          lottery_type: filter_info.lottery_type,
+        },
+      });
 
-      // const endOfDay = new Date('2024-03-03');
-      // endOfDay.setUTCHours(23, 59, 59, 999);
+      return responseHandler.Success({
+        results: {
+          data: obj.data,
+        },
+      });
+    } catch (error) {
+      throw new BadRequestException({
+        message: error,
+      });
+    }
+  }
+
+  async createLottery({ body = null }: { body: LotteryDTO }) {
+    try {
+      const todayMidnight = new Date();
+      todayMidnight.setUTCHours(0, 0, 0, 0);
+
+      const endOfDay = new Date();
+      endOfDay.setUTCHours(23, 59, 59, 999);
 
       const today_lottery_data = await mongo_domain.MongodbFindOne({
         model: LotteryModel,
