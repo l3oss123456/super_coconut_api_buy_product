@@ -6,6 +6,7 @@ import mongo_domain from '@/utils/mongodb_domain';
 import responseHandler from '@/utils/responseHandler';
 import { SocketGateway } from '@/connection/socket/socket.gateway';
 import { LotteryDTO } from '@/dto/lottery/lottery.dto';
+import { LotteryRandomConfigModel } from '@/model/mongodb/lottery/lotteryRandomConfig.model';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
@@ -17,18 +18,57 @@ export class SchedulerService implements OnModuleInit {
     });
   }
 
+  async startRandomToMongodb() {
+    const find_one = await mongo_domain.MongodbFindOne({
+      model: LotteryRandomConfigModel,
+      filter: { lottery_type: process.env.SERVER_TYPE },
+    });
+
+    if (!R.isNil(find_one.data) && !R.isEmpty(find_one.data)) {
+      await mongo_domain.MongodbUpdate({
+        model: LotteryRandomConfigModel,
+        filter: { _id: find_one.data._id },
+        data: { is_start_random: true, current_random_position: 1 },
+      });
+    }
+  }
+
+  async stopRandomToMongodb() {
+    const find_one = await mongo_domain.MongodbFindOne({
+      model: LotteryRandomConfigModel,
+      filter: { lottery_type: process.env.SERVER_TYPE },
+    });
+
+    if (!R.isNil(find_one.data) && !R.isEmpty(find_one.data)) {
+      await mongo_domain.MongodbUpdate({
+        model: LotteryRandomConfigModel,
+        filter: { _id: find_one.data._id },
+        data: { is_start_random: false },
+      });
+    }
+  }
+
   onModuleInit() {
     cronjob({
-      // schedule_time: '*/30 * * * * *',
-      schedule_time:
-        process.env.SERVER_TYPE === 'laos'
-          ? '30 20 * * 1,4'
-          : process.env.SERVER_TYPE === 'hanoi'
-          ? '30 18 * * *'
-          : '*/30 * * * * *',
+      schedule_time: '*/30 * * * * *',
+      // schedule_time:
+      //   process.env.SERVER_TYPE === 'laos'
+      //     ? '30 20 * * 1,4'
+      //     : process.env.SERVER_TYPE === 'hanoi'
+      //     ? '30 18 * * *'
+      //     : '*/30 * * * * *',
       // schedule_time: '1 * * * * *',
       task_action: () => {
+        this.startRandomToMongodb();
         this.tellFrontendStartRandom();
+      },
+    });
+
+    cronjob({
+      schedule_time: '*/40 * * * * *',
+      // schedule_time: '0 21 * * *',
+      task_action: () => {
+        // this.stopRandomToMongodb();
       },
     });
   }
@@ -120,10 +160,12 @@ export class LotteryService {
 
       // Calculate the date 7 days ago from today
       const startDate = new Date();
+      startDate.setUTCHours(0, 0, 0, 0);
       startDate.setDate(startDate.getDate() - 8);
 
       // Calculate the date yesterday
       const endDate = new Date();
+      endDate.setUTCHours(23, 59, 59, 999);
       endDate.setDate(endDate.getDate() - 1);
 
       // Add the date filter to the match criteria
