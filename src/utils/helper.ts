@@ -132,4 +132,22 @@ export default {
 
     return _dto;
   },
+  ToCronJobScheduleFromHourAndMinute({ time = null }: { time: string }) {
+    let cronSchedule = null;
+    if (!R.isNil(time)) {
+      // const [hours, minutes] = time.split(':');
+      const [hours, minutes] = time
+        .split(':')
+        .map((part) => parseInt(part, 10).toString());
+
+      if (process.env.SERVER_TYPE === 'laos') {
+        cronSchedule = `${minutes} ${hours} * * 1,4`;
+      } else if (process.env.SERVER_TYPE === 'hanoi') {
+        cronSchedule = `${minutes} ${hours} * * *`;
+      } else if (process.env.SERVER_TYPE === 'eng') {
+        cronSchedule = `${minutes} ${hours} * * *`;
+      }
+    }
+    return cronSchedule;
+  },
 };

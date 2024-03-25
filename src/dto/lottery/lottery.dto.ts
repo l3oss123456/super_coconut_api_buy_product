@@ -20,6 +20,12 @@ export class LotteryParamsDTO {
     default: 'laos',
   })
   lottery_type?: string;
+  @ApiProperty({
+    required: false,
+    description: 'domain เว็บไซต์',
+    default: 'localhost',
+  })
+  domain?: string;
 }
 
 export class LotteryDTO {
@@ -48,4 +54,11 @@ export class LotteryDTO {
     default: 'laos',
   })
   lottery_type: string;
+
+  @ApiProperty({
+    required: true,
+    description: 'domain เว็บไซต์',
+    default: 'localhost',
+  })
+  domain: string;
 }

@@ -18,6 +18,10 @@ const LotterySchema = new mongoose.Schema(
       enum: ['eng', 'laos', 'hanoi'],
       required: true,
     },
+    domain: {
+      type: String,
+      default: null,
+    },
   },
   {
     timestamps: {

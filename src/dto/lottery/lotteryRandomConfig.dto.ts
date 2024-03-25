@@ -9,6 +9,13 @@ export class LotteryRandomConfigParamsDTO {
     default: 'laos',
   })
   lottery_type?: string;
+
+  @ApiProperty({
+    required: false,
+    description: 'domain เว็บไซต์',
+    default: 'localhost',
+  })
+  domain?: string;
 }
 
 export class UpdateCurrentPositionDTO {
@@ -26,4 +33,11 @@ export class UpdateCurrentPositionDTO {
     default: 'laos',
   })
   lottery_type: string;
+
+  @ApiProperty({
+    required: true,
+    description: 'domain เว็บไซต์',
+    default: 'localhost',
+  })
+  domain: string;
 }

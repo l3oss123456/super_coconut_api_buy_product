@@ -9,7 +9,10 @@ export class LotteryRandomConfigService {
   async getOneLotteryRandomConfig({ filter_info }: { filter_info?: any }) {
     const obj = await mongodb_domain.MongodbFindOne({
       model: LotteryRandomConfigModel,
-      filter: { lottery_type: filter_info.lottery_type },
+      filter: {
+        lottery_type: filter_info.lottery_type,
+        domain: filter_info.domain,
+      },
     });
 
     return responseHandler.Success({

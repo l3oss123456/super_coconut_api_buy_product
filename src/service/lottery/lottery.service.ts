@@ -6,51 +6,51 @@ import mongo_domain from '@/utils/mongodb_domain';
 import responseHandler from '@/utils/responseHandler';
 import { SocketGateway } from '@/connection/socket/socket.gateway';
 import { LotteryDTO } from '@/dto/lottery/lottery.dto';
-import { LotteryRandomConfigModel } from '@/model/mongodb/lottery/lotteryRandomConfig.model';
+// import { LotteryRandomConfigModel } from '@/model/mongodb/lottery/lotteryRandomConfig.model';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
   constructor(private socketGateway: SocketGateway) {}
 
-  async tellFrontendStartRandom() {
-    await this.socketGateway.broadcast('startRandom', {
-      start_random: true,
-    });
-  }
+  // async tellFrontendStartRandom() {
+  //   await this.socketGateway.broadcast('startRandom', {
+  //     start_random: true,
+  //   });
+  // }
 
-  async startRandomToMongodb() {
-    const find_one = await mongo_domain.MongodbFindOne({
-      model: LotteryRandomConfigModel,
-      filter: { lottery_type: process.env.SERVER_TYPE },
-    });
+  // async startRandomToMongodb() {
+  //   const find_one = await mongo_domain.MongodbFindOne({
+  //     model: LotteryRandomConfigModel,
+  //     filter: { lottery_type: process.env.SERVER_TYPE },
+  //   });
 
-    if (!R.isNil(find_one.data) && !R.isEmpty(find_one.data)) {
-      await mongo_domain.MongodbUpdate({
-        model: LotteryRandomConfigModel,
-        filter: { _id: find_one.data._id },
-        data: { is_start_random: true, current_random_position: 1 },
-      });
-    }
-  }
+  //   if (!R.isNil(find_one.data) && !R.isEmpty(find_one.data)) {
+  //     await mongo_domain.MongodbUpdate({
+  //       model: LotteryRandomConfigModel,
+  //       filter: { _id: find_one.data._id },
+  //       data: { is_start_random: true, current_random_position: 1 },
+  //     });
+  //   }
+  // }
 
-  async stopRandomToMongodb() {
-    const find_one = await mongo_domain.MongodbFindOne({
-      model: LotteryRandomConfigModel,
-      filter: { lottery_type: process.env.SERVER_TYPE },
-    });
+  // async stopRandomToMongodb() {
+  //   const find_one = await mongo_domain.MongodbFindOne({
+  //     model: LotteryRandomConfigModel,
+  //     filter: { lottery_type: process.env.SERVER_TYPE },
+  //   });
 
-    if (!R.isNil(find_one.data) && !R.isEmpty(find_one.data)) {
-      await mongo_domain.MongodbUpdate({
-        model: LotteryRandomConfigModel,
-        filter: { _id: find_one.data._id },
-        data: { is_start_random: false },
-      });
-    }
-  }
+  //   if (!R.isNil(find_one.data) && !R.isEmpty(find_one.data)) {
+  //     await mongo_domain.MongodbUpdate({
+  //       model: LotteryRandomConfigModel,
+  //       filter: { _id: find_one.data._id },
+  //       data: { is_start_random: false },
+  //     });
+  //   }
+  // }
 
   onModuleInit() {
     cronjob({
-      schedule_time: '*/30 * * * * *',
+      // schedule_time: '*/30 * * * * *',
       // schedule_time:
       //   process.env.SERVER_TYPE === 'laos'
       //     ? '30 20 * * 1,4'
@@ -59,8 +59,8 @@ export class SchedulerService implements OnModuleInit {
       //     : '*/30 * * * * *',
       // schedule_time: '1 * * * * *',
       task_action: () => {
-        this.startRandomToMongodb();
-        this.tellFrontendStartRandom();
+        // this.startRandomToMongodb();
+        // this.tellFrontendStartRandom();
       },
     });
 
@@ -101,6 +101,13 @@ export class LotteryService {
         match_statement = {
           ...match_statement,
           lottery_type: filter_info.lottery_type,
+        };
+      }
+
+      if (!R.isNil(filter_info.domain) && !R.isEmpty(filter_info.domain)) {
+        match_statement = {
+          ...match_statement,
+          domain: filter_info.domain,
         };
       }
 

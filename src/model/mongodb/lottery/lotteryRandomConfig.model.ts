@@ -13,8 +13,35 @@ const LotteryRandomConfigSchema = new mongoose.Schema(
     current_random_position: {
       type: Number,
     },
+    start_spin_time: {
+      type: String,
+      default: null,
+    },
+    start_spin_time_cronjob_schedule: {
+      type: String,
+      default: null,
+    },
+    first_prize_spin_time: {
+      type: String,
+      default: null,
+    },
+    first_prize_spin_time_cronjob_schedule: {
+      type: String,
+      default: null,
+    },
+    second_prize_spin_time: {
+      type: String,
+      default: null,
+    },
+    second_prize_spin_time_cronjob_schedule: {
+      type: String,
+      default: null,
+    },
+    domain: {
+      type: String,
+      default: null,
+    },
   },
-
   {
     timestamps: {
       // currentTime: () => Math.floor(Date.now() / 1000), // Convert timestamps to Unix time
