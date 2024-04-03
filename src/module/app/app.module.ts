@@ -5,7 +5,6 @@ import { AdminModule } from '../admin/admin.module';
 import { LotteryModule } from '../lottery/lottery.module';
 import { SocketGateway } from '@/connection/socket/socket.gateway';
 import { OnStartUpServerService } from '@/service/onStartUpServer/onStartUpServer.service';
-import { LotteryRandomConfigModule } from '../lotteryRandomConfig/lotteryRandomConfig.module';
 
 @Module({
   imports: [
@@ -15,9 +14,7 @@ import { LotteryRandomConfigModule } from '../lotteryRandomConfig/lotteryRandomC
     MongodbModule,
     AdminModule,
     LotteryModule,
-    LotteryRandomConfigModule,
   ],
-  // controllers: [],
   providers: [SocketGateway, OnStartUpServerService],
 })
 export class AppModule {}

@@ -3,7 +3,7 @@ import { LotteryRandomConfigModel } from '@/model/mongodb/lottery/lotteryRandomC
 import mongodb_domain from '@/utils/mongodb_domain';
 import lotteryRandomConfigData from '../../utils/initialMongodb/lotteryRandomConfigData';
 
-export default {
+export class LotteryHelper {
   async startRandomToMongodb({ domain = null }: { domain: string }) {
     const find_one = await mongodb_domain.MongodbFindOne({
       model: LotteryRandomConfigModel,
@@ -44,7 +44,7 @@ export default {
         },
       });
     }
-  },
+  }
   async stopRandomToMongodb({ domain = null }: { domain: string }) {
     const find_one = await mongodb_domain.MongodbFindOne({
       model: LotteryRandomConfigModel,
@@ -84,5 +84,5 @@ export default {
       //     },
       //   });
     }
-  },
-};
+  }
+}

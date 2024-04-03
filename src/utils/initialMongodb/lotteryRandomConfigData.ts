@@ -1,5 +1,3 @@
-import helper from '../helper';
-
 export default {
   // lottery_type: process.env.SERVER_TYPE,
   is_start_random: false,

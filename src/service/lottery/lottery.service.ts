@@ -6,11 +6,15 @@ import mongo_domain from '@/utils/mongodb_domain';
 import responseHandler from '@/utils/responseHandler';
 import { SocketGateway } from '@/connection/socket/socket.gateway';
 import { LotteryDTO } from '@/dto/lottery/lottery.dto';
+import { LotteryHelper } from '@/provider/lottery/lottery.provider';
 // import { LotteryRandomConfigModel } from '@/model/mongodb/lottery/lotteryRandomConfig.model';
 
 @Injectable()
 export class SchedulerService implements OnModuleInit {
-  constructor(private socketGateway: SocketGateway) {}
+  constructor(
+    private socketGateway: SocketGateway,
+    private lottery_helper: LotteryHelper,
+  ) {}
 
   // async tellFrontendStartRandom() {
   //   await this.socketGateway.broadcast('startRandom', {
@@ -58,7 +62,8 @@ export class SchedulerService implements OnModuleInit {
       //     ? '30 18 * * *'
       //     : '*/30 * * * * *',
       // schedule_time: '1 * * * * *',
-      task_action: () => {
+      schedule_time: '*/5 * * * * *',
+      task_action: async () => {
         // this.startRandomToMongodb();
         // this.tellFrontendStartRandom();
       },
