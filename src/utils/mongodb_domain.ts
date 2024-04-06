@@ -67,10 +67,27 @@ export default {
         ];
       }
 
-      const obj = await model.aggregate(_pipeline).exec();
+      // const obj = await model.aggregate(_pipeline).exec();
+      // return {
+      //   description: 'success',
+      //   data: obj,
+      // };
+
+      const countPipeline = [...pipeline]; // Create a separate pipeline for counting
+      countPipeline.push({ $count: 'total_count' }); // Add $count stage to count documents
+
+      const obj = await model
+        .aggregate([{ $facet: { data: _pipeline, count: countPipeline } }])
+        .exec();
+
+      // Extract data and count from result
+      const data = obj[0].data;
+      const count = obj[0].count[0] ? obj[0].count[0].total_count : 0;
+
       return {
         description: 'success',
-        data: obj,
+        data: data,
+        total: count,
       };
     } catch (error) {
       throw { code: HttpStatus.BAD_REQUEST, description: error };
@@ -141,6 +158,22 @@ export default {
     try {
       const obj = new model({ ...data });
       await obj.save();
+
+      return {
+        description: `success`,
+        data: obj,
+      };
+    } catch (error) {
+      throw { code: HttpStatus.BAD_REQUEST, description: error };
+    }
+  },
+
+  MongodbCreateMany: async ({
+    model = null,
+    data = [],
+  }: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
+    try {
+      const obj = await model.insertMany(data);
 
       return {
         description: `success`,
@@ -229,6 +262,28 @@ export default {
         description: `error query MongodbDelete`,
         error: error,
       };
+    }
+  },
+
+  MongodbDelete: async ({
+    model = null,
+    filter = {},
+  }: MongodbDomainParameterInterface): Promise<MongodbDomainResponseInterface> => {
+    try {
+      const obj = await model.updateOne(
+        { ...filter },
+        { deleted_at: Date.now() },
+      );
+      if (!obj) {
+        throw 'ไม่พบข้อมูทลนี้ในระบบ';
+      }
+
+      return {
+        description: `success`,
+        data: obj,
+      };
+    } catch (error) {
+      throw { code: HttpStatus.BAD_REQUEST, description: error };
     }
   },
 };

@@ -1,14 +1,12 @@
 import { Module } from '@nestjs/common';
 import * as mongoose from 'mongoose';
+import * as dotenv from 'dotenv';
 
-// const mongodb_config = {
-//   uri: `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}`,
-//   options: { dbName: process.env.MONGODB_DATABASE_NAME },
-// };
+dotenv.config();
 
 const mongodb_config = {
-  // uri: `mongodb://${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}`,
-  uri: `mongodb://localhost:27017`,
+  uri: `mongodb://${process.env.MONGODB_USERNAME}:${process.env.MONGODB_PASSWORD}@${process.env.MONGODB_HOST}:${process.env.MONGODB_PORT}`,
+  // uri: `mongodb://localhost:27017`,
   options: {
     dbName: process.env.MONGODB_DATABASE_NAME,
   },
